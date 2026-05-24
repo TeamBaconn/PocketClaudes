@@ -1,7 +1,7 @@
 {
   "name": "pocket-claudes",
   "displayName": "Pocket Claudes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Visualize live Claude Code sessions as desktop NPCs. Each running session spawns an on-screen character that animates to reflect what the session is doing.",
   "author": {
     "name": "Bacon Nguyen"
