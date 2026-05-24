@@ -25,24 +25,16 @@ Launch the PocketClaudes game yourself before (or any time during) a Claude Code
 
 The plugin registers hooks for these Claude Code events:
 
-| Hook event           | Game action                                                          |
-|----------------------|----------------------------------------------------------------------|
-| `SessionStart`       | Spawn NPC for the session                                            |
-| `SessionEnd`         | Despawn NPC; game self-closes when registry empties                  |
-| `UserPromptSubmit`   | NPC → Thinking                                                       |
-| `PreToolUse`         | NPC → tool animation (read / write / run / browse)                   |
-| `PostToolUse`        | NPC → Thinking                                                       |
-| `PostToolUseFailure` | NPC → Thinking                                                       |
-| `PermissionRequest`  | NPC → Attention (permission dialog visible)                          |
-| `PermissionDenied`   | NPC → Thinking                                                       |
-| `Elicitation`        | NPC → Attention (MCP server requesting input)                        |
-| `ElicitationResult`  | NPC → Thinking                                                       |
-| `SubagentStart`      | Spawn a mini follower NPC                                            |
-| `SubagentStop`       | Despawn the mini NPC                                                 |
-| `Stop`               | NPC → Idle                                                           |
-| `StopFailure`        | NPC → Idle                                                           |
+- `SessionStart`, `SessionEnd`
+- `UserPromptSubmit`
+- `PreToolUse`, `PostToolUse`, `PostToolUseFailure`
+- `PermissionRequest`, `PermissionDenied`
+- `Elicitation`, `ElicitationResult`
+- `SubagentStart`, `SubagentStop`
+- `Notification` (only the `idle_prompt` matcher)
+- `Stop`, `StopFailure`
 
-Each hook normalizes the event JSON into a flat `IpcCommand` and POSTs it to the game over loopback HTTP (port 1604). If the game isn't running the POST fails and the event is dropped — the plugin never launches the game. The hook command tries bash first (macOS/Linux), falling back to PowerShell (Windows).
+Each hook normalizes the event JSON into a flat `IpcCommand` and POSTs it to the game over loopback HTTP (port 1604). The hook command tries bash first (macOS/Linux), falling back to PowerShell (Windows).
 
 ## Privacy & security
 
