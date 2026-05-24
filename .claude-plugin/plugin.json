@@ -1,0 +1,19 @@
+{
+  "name": "pocket-claudes",
+  "displayName": "Pocket Claudes",
+  "version": "0.1.0",
+  "description": "Visualize live Claude Code sessions as desktop NPCs. Each running session spawns an on-screen character that animates to reflect what the session is doing.",
+  "author": {
+    "name": "Bacon Nguyen"
+  }, 
+  "license": "MIT",
+  "keywords": ["desktop", "overlay", "npc", "visualization", "hooks"],
+  "userConfig": {
+    "game_exe": {
+      "type": "file",
+      "title": "PocketClaudes executable",
+      "description": "Absolute path to the built PocketClaudes executable. Only SessionStart will cold-start the game; all other events are delivered over HTTP.",
+      "required": false
+    }
+  }
+}
