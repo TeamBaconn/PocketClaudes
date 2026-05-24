@@ -41,6 +41,9 @@
     ],
     "ElicitationResult": [
       { "hooks": [ { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook-event.sh\" || powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook-event.ps1\"" } ] }
+    ],
+    "Notification": [
+      { "matcher": "idle_prompt", "hooks": [ { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/hook-event.sh\" || powershell -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/scripts/hook-event.ps1\"" } ] }
     ]
   }
 }
