@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "pocket-claudes",
-      "source": ".",
+      "source": "./",
       "description": "Visualize live Claude Code sessions as desktop NPCs. Pairs with the PocketClaudes game (separate download).",
       "version": "0.1.0",
       "category": "visualization",
