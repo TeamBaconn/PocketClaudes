@@ -7,13 +7,14 @@ Requires the PocketClaudes game (Unity 6, built separately). Works on Windows, m
 ## Install
 
 ```bash
-claude --plugin-dir ./pocket-claudes-plugin
+claude plugin marketplace add TeamBaconn/PocketClaudes
+claude plugin install pocket-claudes@pocket-claudes
 ```
 
-Or install from a marketplace once published:
+For local development:
 
 ```bash
-claude plugin install pocket-claudes@<marketplace>
+claude --plugin-dir <path-to-this-repo>
 ```
 
 ## Setup
