@@ -7,13 +7,5 @@
     "name": "Bacon Nguyen"
   }, 
   "license": "MIT",
-  "keywords": ["desktop", "overlay", "npc", "visualization", "hooks"],
-  "userConfig": {
-    "game_exe": {
-      "type": "file",
-      "title": "PocketClaudes executable",
-      "description": "Absolute path to the built PocketClaudes executable. Only SessionStart will cold-start the game; all other events are delivered over HTTP.",
-      "required": false
-    }
-  }
+  "keywords": ["desktop", "overlay", "npc", "visualization", "hooks"]
 }

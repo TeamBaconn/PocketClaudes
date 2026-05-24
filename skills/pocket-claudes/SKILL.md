@@ -15,13 +15,9 @@ The plugin alone does nothing visible — the game is the renderer. The game alo
 
 - `hooks/hooks.json` registers 14 hook events. Each event runs one command: `bash scripts/hook-event.sh || powershell ... scripts/hook-event.ps1` — bash first (macOS/Linux), PowerShell fallback (Windows). No external runtime dep.
 - The script reads hook JSON from stdin, extracts a fixed metadata set, walks the parent-process chain for `hostPid`, builds a flat versioned `IpcCommand`, and `POST`s to `http://127.0.0.1:1604/`.
-- If POST fails AND event is `SessionStart`: launches `$game_exe --event '<json>'` to cold-start the game. Game exe resolved from `CLAUDE_PLUGIN_OPTION_GAME_EXE` (userConfig prompt) → `POCKETCLAUDES_EXE` env var. Other failing events drop silently — respects a manual game close, no relaunch on a stray tool event.
-- Game enforces single-instance via named Mutex; a second process forwards `--event` to the running one over HTTP, then exits. Launch path is race-safe.
-- Game's dispatcher is **self-healing**: unknown `session_id` lazily spawns the NPC; unknown `agent_id` lazily spawns a mini NPC; duplicate `SessionStart` reuses. So `SessionStart` is an optimization, never a precondition.
-
-## Auto-start (recommended)
-
-For the game to cold-start automatically on `SessionStart`, `POCKETCLAUDES_EXE` must point at the built game executable. You can ask Claude to set this up for you — e.g. *"set POCKETCLAUDES_EXE to <path-to-PocketClaudes.exe>"* — and it will configure the env var (user/system scope on Windows, shell rc on macOS/Linux). Without it, the game won't auto-launch and events drop until you start the game manually.
+- If the POST fails the event is dropped. The plugin never launches the game — the user is responsible for starting it. So events fired before the game is running (or after a manual close) silently no-op.
+- Game enforces single-instance via a named Mutex; if a second process starts it exits immediately.
+- Game's dispatcher is **self-healing**: unknown `session_id` lazily spawns the NPC; unknown `agent_id` lazily spawns a mini NPC; duplicate `SessionStart` reuses. So `SessionStart` is an optimization, never a precondition — the first event delivered to a running game spawns the NPC regardless of type.
 
 ## Privacy
 
@@ -29,8 +25,7 @@ Hook forwards only: `eventName`, `sessionId`, `agentId`, `agentType`, `toolName`
 
 ## Troubleshooting
 
-- **No NPC on first session.** `game_exe` not configured. Set `POCKETCLAUDES_EXE` (see Auto-start) or re-enable plugin and answer the userConfig prompt. Restart the session — only `SessionStart` cold-starts the game.
+- **No NPC on first session.** The game isn't running. Launch the PocketClaudes executable, then trigger any hook event (e.g. send a prompt) — the next event spawns the NPC via the self-healing dispatcher.
 - **Game crashes immediately with a dialog.** Port `1604` is in use (fixed, no discovery). Kill the conflicting process; check `netstat -ano | findstr :1604` (Windows) or `lsof -i :1604` (mac/Linux).
 - **NPC stuck in wrong state.** Hook event missed or out of order. Next event self-corrects via the idempotent dispatcher; no manual fix.
 - **Clicking NPC focuses the wrong window.** `hostPid` resolution failed. Linux needs `xdotool`; macOS uses `osascript`; Windows uses `Win32_Process`. Install missing tool and restart the session.
-- **Manually closed game keeps relaunching.** Only `SessionStart` may launch. If it does relaunch on other events, a hook is misclassified — inspect `hooks/hooks.json`.

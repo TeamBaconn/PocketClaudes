@@ -19,9 +19,7 @@ claude --plugin-dir <path-to-this-repo>
 
 ## Setup
 
-When you enable the plugin, it prompts for the path to your built PocketClaudes executable. This lets `SessionStart` cold-start the game automatically.
-
-If you skip the prompt, set the `POCKETCLAUDES_EXE` environment variable instead.
+Launch the PocketClaudes game yourself before (or any time during) a Claude Code session. The plugin does not start the game — it only forwards events to a game that is already running. Events sent while the game is closed are dropped silently.
 
 ## How it works
 
@@ -29,7 +27,7 @@ The plugin registers hooks for these Claude Code events:
 
 | Hook event           | Game action                                                          |
 |----------------------|----------------------------------------------------------------------|
-| `SessionStart`       | Spawn NPC for the session (cold-starts game if needed)               |
+| `SessionStart`       | Spawn NPC for the session                                            |
 | `SessionEnd`         | Despawn NPC; game self-closes when registry empties                  |
 | `UserPromptSubmit`   | NPC → Thinking                                                       |
 | `PreToolUse`         | NPC → tool animation (read / write / run / browse)                   |
@@ -44,7 +42,7 @@ The plugin registers hooks for these Claude Code events:
 | `Stop`               | NPC → Idle                                                           |
 | `StopFailure`        | NPC → Idle                                                           |
 
-Each hook normalizes the event JSON into a flat `IpcCommand` and delivers it to the game over loopback HTTP (port 1604). If the game isn't running, only `SessionStart` may launch it via `--event` argument. The hook command tries bash first (macOS/Linux), falling back to PowerShell (Windows).
+Each hook normalizes the event JSON into a flat `IpcCommand` and POSTs it to the game over loopback HTTP (port 1604). If the game isn't running the POST fails and the event is dropped — the plugin never launches the game. The hook command tries bash first (macOS/Linux), falling back to PowerShell (Windows).
 
 ## Privacy & security
 

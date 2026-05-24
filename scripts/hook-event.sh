@@ -70,29 +70,13 @@ json=$(cat <<EOF
 EOF
 )
 
-# Resolve game executable for cold start (SessionStart only).
-game_exe=""
-if [ "$event_name" = "SessionStart" ]; then
-  game_exe="${CLAUDE_PLUGIN_OPTION_GAME_EXE:-$POCKETCLAUDES_EXE}"
-fi
-
-# Try HTTP POST first.
-posted=false
+# POST to the running game. Drop silently if the game isn't running.
 if command -v curl >/dev/null 2>&1; then
-  if curl -s -f -X POST "http://127.0.0.1:${GAME_PORT}/" \
+  curl -s -f -X POST "http://127.0.0.1:${GAME_PORT}/" \
        -H 'Content-Type: application/json' \
        -d "$json" \
        --connect-timeout 2 \
-       -o /dev/null 2>/dev/null; then
-    posted=true
-  fi
-fi
-
-# Cold-start fallback.
-if [ "$posted" = false ]; then
-  if [ -n "$game_exe" ] && [ -x "$game_exe" ]; then
-    nohup "$game_exe" --event "$json" >/dev/null 2>&1 &
-  fi
+       -o /dev/null 2>/dev/null || true
 fi
 
 exit 0
