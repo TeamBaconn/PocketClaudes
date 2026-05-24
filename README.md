@@ -46,6 +46,24 @@ The plugin registers hooks for these Claude Code events:
 
 Each hook normalizes the event JSON into a flat `IpcCommand` and delivers it to the game over loopback HTTP (port 1604). If the game isn't running, only `SessionStart` may launch it via `--event` argument. The hook command tries bash first (macOS/Linux), falling back to PowerShell (Windows).
 
+## Privacy & security
+
+**Your prompts, code, and tool output never leave Claude Code.** The hook forwards only a fixed set of metadata fields to the game — nothing more.
+
+Sent to the game:
+
+- `eventName`, `sessionId`, `agentId`, `agentType` — event type + opaque IDs
+- `toolName`, `toolUseId` — which tool fired (e.g. `Read`, `Bash`), not its arguments
+- `model` — model name
+- `cwd` — current working directory (used as on-NPC label only)
+- `hostPid` — PID of your terminal/IDE window, so clicking the NPC brings *that* window to the front (the only reason the game needs it)
+
+**Never sent:** your prompt text, tool inputs (Bash commands, file paths, edit contents), tool results (file contents, command output), Claude's responses, error messages, MCP elicitation values, or the transcript path.
+
+The game listens only on `127.0.0.1:1604` (loopback) and makes no outbound network connections. You can verify with `netstat` / `lsof` or any network monitor.
+
+Audit the exact fields extracted in `scripts/hook-event.sh` and `scripts/hook-event.ps1` — both are under 100 lines.
+
 ## Structure
 
 ```
